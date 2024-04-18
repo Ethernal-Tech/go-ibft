@@ -474,8 +474,10 @@ func (m *mockCluster) runSequence(height uint64) {
 		m.wg.Add(1)
 
 		go func(ctx context.Context, node *IBFT) {
+			sequenceDoneCh := make(chan struct{})
+
 			// Start the main run loop for the node
-			node.RunSequence(ctx, height)
+			node.RunSequence(ctx, height, sequenceDoneCh)
 
 			m.wg.Done()
 		}(m.ctxs[nodeIndex].ctx, node)

@@ -2959,7 +2959,9 @@ func TestIBFT_RunSequence_NewProposal(t *testing.T) {
 		<-time.After(1 * time.Second)
 	}()
 
-	i.RunSequence(ctx, height)
+	sequenceDoneCh := make(chan struct{})
+
+	i.RunSequence(ctx, height, sequenceDoneCh)
 
 	// Make sure the correct proposal message was accepted
 	assert.Equal(t, ev.proposalMessage, i.state.proposalMessage)
@@ -3008,7 +3010,9 @@ func TestIBFT_RunSequence_FutureRCC(t *testing.T) {
 		<-time.After(1 * time.Second)
 	}()
 
-	i.RunSequence(ctx, height)
+	sequenceDoneCh := make(chan struct{})
+
+	i.RunSequence(ctx, height, sequenceDoneCh)
 
 	// Make sure the proposal message is not set
 	assert.Nil(t, i.state.proposalMessage)
