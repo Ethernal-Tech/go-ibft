@@ -106,7 +106,9 @@ func (n *node) runSequence(ctx context.Context, height uint64) {
 	ctxSequence, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	n.core.RunSequence(ctxSequence, height)
+	sequenceDoneCh := make(chan struct{})
+
+	n.core.RunSequence(ctxSequence, height, sequenceDoneCh)
 }
 
 type cluster struct {
@@ -137,13 +139,15 @@ func (c *cluster) runGradualSequence(ctx context.Context, height uint64) {
 		c.wg.Add(1)
 
 		go func(ctx context.Context, ordinal int, node *node) {
+			sequenceDoneCh := make(chan struct{})
+
 			// Start the main run loop for the node
 			runDelay := ordinal * rand.Intn(1000)
 
 			select {
 			case <-ctx.Done():
 			case <-time.After(time.Duration(runDelay) * time.Millisecond):
-				node.core.RunSequence(ctx, height)
+				node.core.RunSequence(ctx, height, sequenceDoneCh)
 			}
 
 			c.wg.Done()

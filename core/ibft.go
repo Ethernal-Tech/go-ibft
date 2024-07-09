@@ -301,7 +301,7 @@ func (i *IBFT) watchForRoundChangeCertificates(ctx context.Context) {
 }
 
 // RunSequence runs the IBFT sequence for the specified height
-func (i *IBFT) RunSequence(ctx context.Context, h uint64) {
+func (i *IBFT) RunSequence(ctx context.Context, h uint64, sequenceDoneCh chan struct{}) {
 	startTime := time.Now()
 
 	// Set the starting state data
@@ -378,6 +378,10 @@ func (i *IBFT) RunSequence(ctx context.Context, h uint64) {
 			// Stop all running worker threads
 			teardown()
 			i.insertBlock()
+
+			return
+		case <-sequenceDoneCh:
+			teardown()
 
 			return
 		case <-ctxRound.Done():
