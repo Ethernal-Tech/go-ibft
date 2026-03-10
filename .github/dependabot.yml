@@ -9,5 +9,5 @@ updates:
     pull-request-branch-name:
       separator: "-"
     reviewers:
-      - "dbrajovic"
-      - "zivkovicmilos"
+      - "igorcrevar"
+      - "oliverbundalo"
